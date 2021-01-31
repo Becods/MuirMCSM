@@ -1,0 +1,81 @@
+#!/bin/bash
+
+WebPid(){ #查找服务器pid
+WebPid=`ps -ef|grep ttyd|grep -iv 'grep\|screen'|awk '{print $2}'`
+}
+
+pid(){ #查找服务器pid
+Pid=`ps -ef|grep "$Server_Path/"$Server_Name"/"|grep -iv 'grep\|screen'|awk '{print $2}'`
+}
+
+Back(){
+if [[ $UseMenu -eq "1" ]];then
+	echo -e "\n回车返回"&&read&& MainMenu
+fi
+}
+
+WBack(){
+if [[ $UseMenu -eq "1" ]];then
+	echo -e "\n回车返回"&&read&&clear&&Web_Menu
+fi
+}
+
+Permission_Check(){ #权限设置
+	for file in `ls $dir"/module/"`;do
+		chmod +x $dir"/module/"$file
+	done
+	clear
+	logo
+	echo -e "${Info}权限检查${Font_suffix}"
+	if [ $action == "p-single" ];then
+		chown -R $User $Server_Path"/"$Server_Name
+		echo -e "${Info}${Server_Name} 权限设置完成！"
+		sleep 2
+		MainMenu
+	elif [ $action == "permission" ];then
+		echo "1. 全部服务器"
+		echo "2. 单个服务器"
+		echo "0. 返回主菜单"
+		read PermissionChoice
+		case "$PermissionChoice" in
+			0)MainMenu;;
+			1)action=all && clear && Permission_Check;;
+			2)action=p-single && clear && Server_List;;
+			*)echo -e "${Error} 请重新选择" && read && Permission_Check;;
+		esac
+	elif [ $action == "all" ];then
+		for Server in $list;do
+			chown -R $User $Server_Path"/"$Server
+			echo -e "${Info}${Server} 权限设置完成！"
+		done
+		sleep 2
+		MainMenu
+	else
+		echo -e "${Error} 传参错误，请检查参数是否正确！"
+	fi
+}
+
+Server_Detail(){ #割了
+echo > ./tmp/tps
+su $User << BASH
+screen -x -S $Server_Name -p 0 -X stuff "tps"
+screen -x -S $Server_Name -p 0 -X stuff $'\n'
+BASH
+sleep 0.1
+log=`grep 'TPS from last' $Server_Path"/"$Server_Name"/logs/latest.log"|grep -v grep|tail -1`
+tps=`echo $log|awk 'BEGIN {""} {for(i=10;i<=NF;i++) printf $i}'|sed 's/\*//g'|sed 's/,/, /g'` #可能前面会带*所有我们要去除
+#i=0
+#for var in ${tps[@]};do 读取数组
+#	if [ `echo "$var > 18" | bc` -eq "1" ];then
+#	    tps[${i}]=${Green_font}${var} 再次存入数组
+#	elif [ `echo "$var > 16" | bc` -eq 1 && `echo "$var < 18" | bc` -eq 1 ]
+#		tps[${i}]=${Yellow_font}${var}
+#	else
+#		tps[${i}]=${Red_font}${var}
+#	fi
+#	let i=${i}+1
+#done
+#echo ${#tps[@]}
+echo -e "${Info}${Server_Name}最近的TPS为$tps"
+rm -rf ./tmp/tps
+}

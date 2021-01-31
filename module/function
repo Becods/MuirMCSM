@@ -1,0 +1,91 @@
+#!/bin/bash
+
+#载入配置
+. $dir"/.config"
+
+#载入模块
+. $dir"/module/other"
+. $dir"/module/web"
+. $dir"/module/control"
+. $dir"/module/menus"
+. $dir"/module/list"
+. $dir"/module/install"
+
+Server_StartCommand(){ #服务器启动命令
+Server_P1=" -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
+-XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC \
+-XX:-OmitStackTraceInFastThrow -XX:+AlwaysPreTouch -XX:G1MaxNewSizePercent=40 \
+-XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5"
+Server_P2=" -XX:G1MixedGCCountTarget=8 -XX:InitiatingHeapOccupancyPercent=15 \
+-XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 \
+-XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true \
+-server -Xms"$Server_memMin" -Xmx"$Server_memMax" \
+-jar "$Server_Path"/"$Server_Name"/"$Server_Jar" nogui "
+Server_Parameter="java $Server_pre$Server_P1$Server_P2$Server_suf" #合成
+}
+
+check_sys(){
+	if [[ -f /etc/redhat-release ]]; then
+		release="centos"
+	elif cat /etc/issue | grep -q -E -i "debian"; then
+		release="debian"
+	elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+		release="ubuntu"
+	elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+		release="centos"
+	elif cat /proc/version | grep -q -E -i "debian"; then
+		release="debian"
+	elif cat /proc/version | grep -q -E -i "ubuntu"; then
+		release="ubuntu"
+	elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+		release="centos"
+    fi
+}
+
+#screen用户目录
+run="/var/run/screen/S-"$User
+
+#字符颜色
+Green_font="\033[32m"
+Yellow_font="\033[33m"
+Red_font="\033[31m"
+Black_font="\033[30m"
+Font_suffix="\033[0m"
+Info="[${Green_font}Info${Font_suffix}] "
+Error="[${Red_font}Error${Font_suffix}] "
+Powered="${Black_font}Powered by Becod${Font_suffix}"
+
+list=`sed 's/#/\n#/g' $dir"/.config"|sed '/#/d'|grep '(){'|sed 's/(){//g'` #服务器列表
+
+no_function(){ #功能未定义
+echo -e "${Error}功能未实现！"
+if [[ $UseMenu -eq "1" ]];then
+	sleep 1
+	MainMenu
+fi
+}
+
+logo(){
+echo -e "--------------------------------------------
+   __  ___     _     __  ______________  ___
+  /  |/  /_ __(_)___/  |/  / ___/ __/  |/  /
+ / /|_/ / // / / __/ /|_/ / /___\ \/ /|_/ / 
+/_/  /_/\_,_/_/_/ /_/  /_/\___/___/_/  /_/ 
+
+ Copyright 2021 Becod_ All rights reserved.
+--------------------------------------------"
+}
+
+init(){ #初始化检测
+if [ ! -d "$run" ]; then
+	mkdir "$run" && chmod 700 "$run" && chown -R "$User" "$run"
+fi
+if [ ! -d "/var/run/screen/S-root" ]; then
+	mkdir "/var/run/screen/S-root"
+fi
+if [ -f $dir"/module/FirstRun" ]; then
+	install
+fi
+}
+
+trap "" HUP INT TSTP

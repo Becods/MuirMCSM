@@ -1,0 +1,52 @@
+#!/bin/bash
+
+install_test(){
+	if [[ -n `command -V curl|grep "not found"` ]];then
+		echo -e "${Error}Curl安装失败"
+		exit 1
+	fi
+	if [[ -n `command -V wget|grep "not found"` ]];then
+		echo -e "${Error}wget安装失败"
+		exit 1
+	fi
+	if [[ -n `command -V screen|grep "not found"` ]];then
+		echo -e "${Error}screen安装失败"
+		exit 1
+	fi
+	install_ok
+}
+
+install_ok(){
+	rm -rf $dir"/module/FirstRun"
+	clear
+	logo
+	echo -e "${Info}恭喜安装完成！2秒后将为您返回主菜单"
+	sleep 2s
+	MainMenu
+}
+
+install(){
+	clear
+	check_sys&&logo
+	echo -ne "\033]0;MuirMCSM安装中\007"
+	echo -e "${Info}欢迎使用 MuirMCSM ${Powered}
+${Info}检测到您是首次使用 MuirMCSM , 现在为您安装前置程序"
+	echo -ne "\033]0;MuirMCSM安装中\007"
+	if [[ $release == "centos" ]];then
+		yum install screen curl wget -y
+		install_test
+	elif [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then
+		apt-get install screen curl wget -y
+		install_test
+	else
+		echo -e "${Error}MuirMCSM当前不支持您的系统！"
+		echo -e "${Info}请复制下列信息提交至Issues"
+		echo -e "==========^/proc/version^=========="
+		cat /proc/version
+		echo -e "==========^lsb_release -a^=========="
+		lsb_release -a
+		echo -e "==========^release^=========="
+		cat /etc/*-release
+		exit
+	fi
+}

@@ -1,0 +1,15 @@
+#!/bin/bash
+#这里是重启检测模块
+dir="/home/server/control"
+. $dir"/.config"
+for ((i=0;i<=$check_time_out;i++));do
+	pid=`ps -ef|grep "$Server_Path/"$Server_Name"/"|grep -iv 'grep\|screen'|awk '{print $2}'`
+	if [ -z $pid ];then
+		su $User << BASH
+		cd $Server_Path"/"$Server_Name
+		screen -dmS $Server_Name $Server_Parameter
+BASH
+		killpid=`ps -ef|grep 'restart'|grep -v grep|awk '{print $2}'` && kill -9 $killpid #终结自己
+	fi
+sleep 0.1
+done

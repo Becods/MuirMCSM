@@ -1,0 +1,89 @@
+#!/bin/bash
+
+WebPid
+
+Web_Start(){
+if [ -z $WebPid ]; then
+	echo -e "${Info}网页控制台 正在启动..."
+	cd $dir
+	screen=`ls /var/run/screen/S-root | grep ttyd | tr -cd "[0-9]"`
+	if [ -z $screen ];then
+		screen -dmS ttyd
+	fi
+	screen -x -S ttyd -p 0 -X stuff "$dir/module/ttyd -t titleFixed='MCServerConsole' -p $WebPort $dir/mc"
+	screen -x -S ttyd -p 0 -X stuff $'\n'
+	echo -e "${Info}网页控制台 启动信号发送成功！"
+	echo -e "${Info}请使用 $WebPort 端口访问！"
+else
+	echo -e "${Info}网页控制台 正在运行！"
+fi
+WBack
+}
+
+Web_Stop(){
+echo -e "${Red_font}[警告]${Font_suffix}停止网页控制台将会导致连接的用户断开，确认吗？[y/N]"
+read Stop_Web
+if [ -z `echo $Stop_Web|grep -i 'yes\|y'` ];then
+	echo -e "${Info}操作已取消"
+	WBack
+else
+	if [ -z $WebPid ]; then
+		echo -e "${Error}网页控制台 未运行！"
+	else
+		echo -e "${Info}网页控制台 正在停止..."
+		cd $dir
+		screen -x -S ttyd -p 0 -X stuff "^c"
+		usleep 200
+		screen -x -S ttyd -p 0 -X stuff "exit"
+		screen -x -S ttyd -p 0 -X stuff $'\n'
+		echo -e "${Info}网页控制台停止信号发送成功！"
+	fi
+fi
+}
+
+Web_S(){
+if [ -z $WebPid ]; then
+	W_S="${Yellow_font}未运行！${Font_suffix}"
+else
+	if [[ $UseMenu -eq "1" ]];then
+		W_S="${Green_font}正在运行${Font_suffix}\n   请使用 $WebPort 端口访问"
+	else
+		W_S="${Green_font}正在运行${Font_suffix}\n${Info}请使用 $WebPort 端口访问"
+	fi
+fi
+}
+
+Web_Status(){
+Web_S
+echo -e "${Info}网页控制台 $W_S"
+WBack
+}
+
+Web_Restart(){
+if [ -z $WebPid ]; then
+	echo -e "${Error}网页控制台 未运行！"
+else
+	echo -e "${Info}网页控制台 正在重启..."
+	screen -x -S ttyd -p 0 -X stuff "^c"
+	usleep 200
+	screen -x -S ttyd -p 0 -X stuff "$dir/module/ttyd -t titleFixed='MCServerConsole' -p $WebPort $dir/mc"
+	screen -x -S ttyd -p 0 -X stuff $'\n'
+	echo -e "${Info}网页控制台 重启信号发送成功！"
+fi
+WBack
+}
+
+Web_control(){
+if [ -z $action ]; then
+    Web_Menu
+else
+	case "$action" in
+		start)Web_Start;;
+		stop)Web_Stop;;
+		restart)Web_Restart;;
+		reload)Web_Restart;;
+		status)Web_Status;;
+		*)echo -e "${Error}参数错误，请使用：{start|stop|restart|reload|status}";;
+	esac
+fi
+}

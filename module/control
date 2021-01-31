@@ -1,0 +1,81 @@
+#!/bin/bash
+
+Server_Start(){ 
+pid
+if [ -z $Pid ]; then
+	echo -e "${Info}${Server_Name} 正在启动..."
+	su $User << BASH
+cd $Server_Path"/"$Server_Name
+screen -dmS $Server_Name $Server_Parameter
+BASH
+	echo -e "${Info}${Server_Name} 启动信号发送成功！"
+else
+	echo -e "${Info}${Server_Name} 正在运行！"
+fi
+Back
+}
+
+Server_Stop(){
+pid
+if [ -z $Pid ]; then
+	echo -e "${Error}${Server_Name} 未运行！"
+else
+echo -e "${Info}${Server_Name} 正在停止..."
+su $User << BASH
+cd $Server_Path"/"$Server_Name
+screen -x -S $Server_Name -p 0 -X stuff "^c"
+BASH
+echo -e "${Info}${Server_Name} 停止信号发送成功！"
+fi
+Back
+}
+
+Server_Status(){
+pid
+if [[ $UseMenu -eq "1" ]];then
+	clear
+	logo
+fi
+if [ -z $Pid ]; then
+	echo -e "${Info}${Server_Name} 未运行！"
+else
+	echo -e "${Info}${Server_Name} 正在运行！"
+fi
+Back
+}
+
+Console(){
+pid
+if [[ $UseMenu -eq "1" ]];then
+	clear
+	logo
+fi
+if [ -z $Pid ]; then
+	echo -e "${Info}${Server_Name} 未运行！"
+	Back
+else
+	echo -e "${Info}请使用${Red_font}Ctrl+A+D${Font_suffix}以返回界面，否则将会直接结束服务器进程！"
+	echo -e "按回车进入"&&read
+	sudo -u $User screen -R $Server_Name
+fi
+}
+
+Server_Restart(){
+pid
+if [ -z $Pid ]; then
+	echo -e "${Error}${Server_Name} 未运行！"
+else
+	echo -e "${Info}${Server_Name} 正在重启..."
+	su $User << BASH
+	screen -x -S $Server_Name -p 0 -X stuff "^c"
+BASH
+	export Server_Name
+	export Server_Parameter
+	export Server_Path
+	export dir
+	nohup $dir"/module/restart" >/dev/null 2>&1 &
+	#$dir"/module/restart"
+	echo -e "${Info}${Server_Name} 重启信号发送成功！"
+fi
+Back
+}

@@ -1,0 +1,60 @@
+#!/bin/bash
+Server_Not_Found(){
+	echo -e "\n${Error}输入错误或服务器不存在！\n回车返回"
+	if [[ $UseMenu -eq "1" ]];then
+		read
+		clear
+		Server_List
+	else
+		exit 0
+	fi
+}
+
+Server_List(){
+	if [[ $action == "web" ]];then
+		clear&&Web_contorl
+	elif [[ $UseMenu -eq "1" ]];then #判断是否是从菜单进来的
+		logo
+		echo -e "${Info}服务器选择${Font_suffix} ${Powered}"
+		echo "$list"|awk '{print FNR". "$0}' #打印数字，方便选择
+		echo -e "q. 返回主菜单\n"
+		read -p "请选择:" ServerChoice
+		if [ "$ServerChoice" == "0" ]||[ "$ServerChoice" == "q" ];then
+			MainMenu
+		elif [[ "$ServerChoice" =~ ^[1-9]+$ ]];then
+			Server_Name=`echo "$list"|sed -n "${ServerChoice}p"|sed 's/ //g'`
+			if [ ! $Server_Name ];then
+				Server_Not_Found
+			else
+				$Server_Name
+			fi
+		else
+			Server_Not_Found
+		fi
+	else
+		if [ -z "`echo $list|grep $Server_Name`" ];then #查找服务器是否存在
+			Server_Not_Found
+		else
+			$Server_Name
+		fi
+	fi
+	Server_StartCommand
+
+	case "$action" in
+		start)Server_Start;;
+		stop)Server_Stop;;
+		status)Server_Status;;
+		reload)Server_Restart;;
+		restart)Server_Restart;;
+		console)Console;;
+		p-single)Permission_Check;;
+		list)no_function;;
+		*)echo -e "${Error}参数错误\c"
+		if [[ $UseMenu -eq "1" ]];then
+			sleep 1
+			MainMenu
+		else
+			echo "，请使用：{start|stop|restart|reload|status}"
+		fi;;
+	esac
+}

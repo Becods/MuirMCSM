@@ -1,0 +1,52 @@
+#!/bin/bash
+MainMenu(){
+	echo -ne "\033]0;MuirMCSM\007"
+	clear&&logo
+	echo -e "${Info}欢迎使用 MuirMCSM ${Powered}
+   ${Yellow_font}1.${Font_suffix}开启服务器
+   ${Yellow_font}2.${Font_suffix}关闭服务器
+   ${Yellow_font}3.${Font_suffix}服务器状态
+   ${Yellow_font}4.${Font_suffix}重启服务器
+   ${Yellow_font}5.${Font_suffix}新建服务器
+   ${Yellow_font}6.${Font_suffix}进入控制台
+   ${Yellow_font}7.${Font_suffix}网页控制台
+   ${Yellow_font}8.${Font_suffix}权限检查
+   #${Yellow_font}9.${Font_suffix}在线玩家
+   ${Yellow_font}q.${Font_suffix}退出脚本${Font_suffix}"
+	read -p "请选择:" function
+	case "$function" in
+		q|0)clear && exit 1;;
+		1)action=start && clear && Server_List;;
+		2)action=stop && clear && Server_List;;
+		3)action=status && clear && Server_List;;
+		4)action=restart && clear && Server_List;;
+		5)action=new && clear && Server_List;;
+		6)action=console && clear && Server_List;;
+		7)action="" && clear && Web_control;;
+		8)action=permission && clear && Permission_Check;;
+		9)action=list && clear && Server_List;;
+		r)$0;;
+		*)echo -e "${Error}请重新选择, 回车返回" && read && MainMenu;;
+	esac
+}
+
+Web_Menu(){
+	Web_S&&logo
+	echo -e "${Info}网页控制台 ${Powered}
+   ${Yellow_font}1.${Font_suffix}开启网页控制台
+   ${Yellow_font}2.${Font_suffix}关闭网页控制台
+   ${Yellow_font}3.${Font_suffix}重启网页控制台
+   ${Yellow_font}q.${Font_suffix}退出脚本${Font_suffix}
+
+   网页控制台运行状态：$W_S"
+	read -p "请选择:" function
+	echo ""
+	case "$function" in
+		q|0)clear && exit 1;;
+		1)Web_Start;;
+		2)Web_Stop;;
+		3)Web_Restart;;
+		r)$0;;
+		*)echo -e "${Error}请重新选择, 回车返回" &&read&&clear&&Web_Menu;;
+	esac
+}
