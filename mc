@@ -20,7 +20,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 #           └─┐  ┐  ┌───────┬──┐  ┌──┘
 #             │ ─┤ ─┤       │ ─┤ ─┤
 #             └──┴──┘       └──┴──┘ 
-dir="/home/server/control" #脚本位置
+dir=`pwd`
 Server_Name=$1
 action=$2
 

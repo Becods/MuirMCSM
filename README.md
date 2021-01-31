@@ -1,10 +1,17 @@
-MuirMCSM
---------
-> 这是一个基于 Shell 的 Minecraft 服务端控制工具
+<div align="center">
+
+# MuirMCSM
+
+_✨ 基于 Shell 的 Minecraft 服务端控制工具 ✨_
+
+</div>
+
+---
 
 ## Usage
-- 配置.config
-- 运行mc.sh
+- `vi .config`
+- `chmod +x mc&&./mc`
+- Enjoy!
 
 ## Project
 - Docker
