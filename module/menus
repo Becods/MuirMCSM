@@ -12,10 +12,11 @@ MainMenu(){
    ${Yellow_font}7.${Font_suffix}网页控制台
    ${Yellow_font}8.${Font_suffix}权限检查
    #${Yellow_font}9.${Font_suffix}在线玩家
-   ${Yellow_font}q.${Font_suffix}退出脚本${Font_suffix}"
-	read -p "请选择:" function
-	case "$function" in
-		q|0)clear && exit 1;;
+   ${Yellow_font}0.${Font_suffix}退出脚本${Font_suffix}"
+	read -p "请选择:" Menu_Choice
+	case "$Menu_Choice" in
+		q)clear && exit 1;;
+		0)clear && exit 1;;
 		1)action=start && clear && Server_List;;
 		2)action=stop && clear && Server_List;;
 		3)action=status && clear && Server_List;;
@@ -36,13 +37,14 @@ Web_Menu(){
    ${Yellow_font}1.${Font_suffix}开启网页控制台
    ${Yellow_font}2.${Font_suffix}关闭网页控制台
    ${Yellow_font}3.${Font_suffix}重启网页控制台
-   ${Yellow_font}q.${Font_suffix}退出脚本${Font_suffix}
+   ${Yellow_font}0.${Font_suffix}退出脚本${Font_suffix}
 
    网页控制台运行状态：$W_S"
-	read -p "请选择:" function
+	read -p "请选择:" Web_Choice
 	echo ""
-	case "$function" in
-		q|0)clear && exit 1;;
+	case "$Web_Choice" in
+		q)clear && exit 1;;
+		0)clear && exit 1;;
 		1)Web_Start;;
 		2)Web_Stop;;
 		3)Web_Restart;;

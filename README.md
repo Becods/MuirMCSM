@@ -9,13 +9,57 @@ _✨ 基于 Shell 的 Minecraft 服务端控制工具 ✨_
 ---
 
 ## Usage
-- `vi .config`
-- `chmod +x mc&&./mc`
+- `./mc`
+- `vi /etc/MuirMCSM/config`
 - Enjoy!
+
+## Config
+1.参数说明
+```
+Server_Path="" #服务端路径 [必须] 
+User="mc" #服务端运行用户 [必须] 
+check_time_out="1200" #这里填写重启脚本超时时间，单位1/10秒 [必须]
+WebPort=8080 #网页控制台端口
+
+Server_Jar="Example*.jar" #服务端文件名,可用通配符 [必须]
+Server_memMin="2048M" #最小占用内存 [必须]
+Server_memMax="16384M" #最大占用内存 [必须]
+Server_pre="" #服务端启动前置参数
+Server_suf="" #服务端启动后置参数
+
+Group="true" #是否为群组服
+```
+
+2.单端
+```
+Example(){
+	Server_Jar="Example*.jar"
+	Server_memMin="2048M"
+	Server_memMax="16384M"
+}
+```
+
+3.群组服
+群组服请将主服的Group设置为true，并使用 <主服务器名>.<字服务器名> 命名规则命名
+
+一级菜单将会仅显示群组服主服名，二级菜单将会显示该主服下所有子服
+```
+Example_Group(){ #主服名
+	Server_Jar="Example*.jar"
+	Server_memMin="2048M"
+	Server_memMax="16384M"
+	Group="true" #是否为群组服
+}
+
+Example_Group.lobby(){ #子服名
+	Server_Jar="Example*.jar"
+	Server_memMin="2048M"
+	Server_memMax="16384M"
+}
+```
 
 ## Project
 - Docker
-- 群组服支持
 - 全模块化 (是的没错现在半模块化只是方便区分功能)
 - 优化亿下代码
 

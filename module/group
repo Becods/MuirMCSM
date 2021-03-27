@@ -1,0 +1,44 @@
+#!/bin/bash
+
+Group_List(){
+clear&&logo
+echo -e "${Info}服务器选择 - ${Server_Name}群组服${Font_suffix} ${Powered}"
+list&&echo "$glist"|awk '{print FNR". "$0}'
+if [[ $action != "console" ]];then
+echo -e "a. 全选\n"
+fi
+echo -e "q. 返回主菜单\n"
+read -p "请选择:" GServerChoice
+if [ "$GServerChoice" == "0" ]||[[ "$GServerChoice" == "q" ]];then
+	MainMenu
+elif [ "$GServerChoice" == "a" ];then
+	Group_All
+elif [[ "$GServerChoice" =~ ^[0-9]+$ ]];then
+	Server_Name=`list&&echo "$glist"|sed -n "${GServerChoice}p"|sed 's/ //g'`
+	Server_Check
+	Server_Action
+else
+	Server_Not_Found
+fi
+}
+
+Group_All(){
+if [[ $UseMenu -eq "1" ]];then
+	clear
+	logo
+	UseMenu=0
+	for i in $glist;do
+		Server_Name=$i
+		Server_Check
+		Server_Action
+	done
+	UseMenu=1
+	Back
+else
+	for i in $glist;do
+		Server_Name=$i
+		Server_Check
+		Server_Action
+	done
+fi
+}

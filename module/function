@@ -10,6 +10,7 @@
 . $dir"/module/menus"
 . $dir"/module/list"
 . $dir"/module/install"
+. $dir"/module/group"
 
 Server_StartCommand(){ #服务器启动命令
 Server_P1=" -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
@@ -55,7 +56,34 @@ Info="[${Green_font}Info${Font_suffix}] "
 Error="[${Red_font}Error${Font_suffix}] "
 Powered="${Black_font}Powered by Becod${Font_suffix}"
 
-list=`sed 's/#/\n#/g' $dir"/.config"|sed '/#/d'|grep '(){'|sed 's/(){//g'` #服务器列表
+list(){
+alist=`sed 's/#/\n#/g' $dir"/.config"|sed '/#/d'|grep '(){'|sed 's/(){//g'`
+if [[ $Group == "true" ]];then
+	glist=`echo "$alist"|grep $Server_Name`
+fi
+list=`echo "$alist"|grep -v '\.'`
+}
+
+Server_Action(){
+Server_StartCommand
+case "$action" in
+	start)Server_Start;;
+	stop)Server_Stop;;
+	status)Server_Status;;
+	reload)Server_Restart;;
+	restart)Server_Restart;;
+	console)Console;;
+	p-single)Permission_Check;;
+	list)no_function;;
+	*)echo -e "${Error}参数错误\c"
+	if [[ $UseMenu -eq "1" ]];then
+		sleep 1
+		MainMenu
+	else
+		echo "，请使用：{start|stop|restart|reload|status}"
+	fi;;
+esac
+}
 
 no_function(){ #功能未定义
 echo -e "${Error}功能未实现！"
