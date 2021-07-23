@@ -12,6 +12,16 @@
 . $dir"/module/install"
 . $dir"/module/group"
 
+
+if [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then #debian特权！
+	Java8bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 8)
+	Java11bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 11)
+	Java16bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 16)
+	[ ! $Java8bin ] && Java8bin="java"
+	[ ! $Java11bin ] && Java11bin="java"
+	[ ! $Java16bin ] && Java16bin="java"
+fi
+
 Server_StartCommand(){ #服务器启动命令
 Server_P1=" -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
 -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC \
@@ -22,7 +32,15 @@ Server_P2=" -XX:G1MixedGCCountTarget=8 -XX:InitiatingHeapOccupancyPercent=15 \
 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true \
 -server -Xms"$Server_memMin" -Xmx"$Server_memMax" \
 -jar "$Server_Path"/"$Server_Name"/"$Server_Jar" nogui "
-Server_Parameter="java $Server_pre$Server_P1$Server_P2$Server_suf" #合成
+if [[ $Server_Java == "8" ]];then
+	Server_Parameter="$Java8bin $Server_pre$Server_P1$Server_P2$Server_suf"
+elif [[ $Server_Java == "11" ]];then
+	Server_Parameter="$Java11bin $Server_pre$Server_P1$Server_P2$Server_suf"
+elif [[ $Server_Java == "16" ]];then
+	Server_Parameter="$Java16bin $Server_pre$Server_P1$Server_P2$Server_suf"
+else
+	Server_Parameter="java $Server_pre$Server_P1$Server_P2$Server_suf"
+fi
 }
 
 check_sys(){
