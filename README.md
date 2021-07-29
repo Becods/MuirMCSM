@@ -9,8 +9,9 @@ _✨ 基于 Shell 的 Minecraft 服务端控制工具 ✨_
 ---
 
 ## Usage
-- `./mc`
-- `vi /etc/MuirMCSM/config`
+- 修改`mc`中的`dir`变量
+- `vi .config`
+- `chmod +x ./mc&&./mc`
 - Enjoy!
 
 ## Config
@@ -21,13 +22,17 @@ User="mc" #服务端运行用户 [必须]
 check_time_out="1200" #这里填写重启脚本超时时间，单位1/10秒 [必须]
 WebPort=8080 #网页控制台端口
 
-Server_Jar="Example*.jar" #服务端文件名,可用通配符 [必须]
-Server_memMin="2048M" #最小占用内存 [必须]
-Server_memMax="16384M" #最大占用内存 [必须]
+Server_Java=8 #服务器Java版本，可选8 11 16
+Server_Jar="Example*.jar" #服务端文件名,可用通配符 [必须] 
+Server_memMin="2048M" #最小占用内存 [必须] 
+Server_memMax="16384M" #最大占用内存 [必须] 
 Server_pre="" #服务端启动前置参数
 Server_suf="" #服务端启动后置参数
+Server_Classpath="" #用户定义的类和包
+Server_MainClass="" #服务端的主类
 
 Group="true" #是否为群组服
+Velocity_MysqlFix="true" #是否要给Velocity打个Mysql的连接器补丁
 ```
 
 2.单端
@@ -60,7 +65,7 @@ Example_Group.lobby(){ #子服名
 
 ## Project
 - Docker
-- 全模块化 (是的没错现在半模块化只是方便区分功能)
+- 全模块化 (是的没错现在伪模块化只是方便区分功能)
 - 优化亿下代码
 
 ## Used open source projects

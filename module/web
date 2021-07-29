@@ -1,9 +1,9 @@
 #!/bin/bash
 
 WebPid
-
 Web_Start(){
 if [ -z $WebPid ]; then
+	check_ttyd
 	echo -e "${Info}网页控制台 正在启动..."
 	cd $dir
 	screen=`ls /var/run/screen/S-root | grep ttyd | tr -cd "[0-9]"`

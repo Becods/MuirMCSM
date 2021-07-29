@@ -142,7 +142,7 @@ setDebian(){
 
 install(){
 	clear
-	check_sys&&logo
+	logo
 	echo -ne "\033]0;MuirMCSM安装中\007"
 	echo -e "${Info}欢迎使用 MuirMCSM ${Powered}
 ${Info}检测到您是首次使用 MuirMCSM , 现在为您安装前置程序"

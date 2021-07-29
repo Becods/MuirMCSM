@@ -12,17 +12,49 @@
 . $dir"/module/install"
 . $dir"/module/group"
 
+if [[ -f /etc/redhat-release ]]; then
+	release="centos"
+elif cat /etc/issue | grep -q -E -i "debian"; then
+	release="debian"
+elif cat /etc/issue | grep -q -E -i "ubuntu"; then
+	release="ubuntu"
+elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
+	release="centos"
+elif cat /proc/version | grep -q -E -i "debian"; then
+	release="debian"
+elif cat /proc/version | grep -q -E -i "ubuntu"; then
+	release="ubuntu"
+elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
+	release="centos"
+fi
 
-if [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then #debian特权！
+Server_Java_select(){
 	Java8bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 8)
 	Java11bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 11)
 	Java16bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 16)
-	[ ! $Java8bin ] && Java8bin="java"
-	[ ! $Java11bin ] && Java11bin="java"
-	[ ! $Java16bin ] && Java16bin="java"
-fi
+	if [[ $Server_Java == "8" ]] && [[ -n $Java8bin ]];then
+		Java=$Java8bin
+	elif [[ $Server_Java == "11" ]] && [[ -n $Java11bin ]];then
+		Java=$Java11bin
+	elif [[ $Server_Java == "16" ]] && [[ -n $Java16bin ]];then
+		Java=$Java16bin
+	else
+		Java=`which java`
+	fi
+}
 
 Server_StartCommand(){ #服务器启动命令
+if [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then #debian特权！
+	Server_Java_select
+fi
+if [[ $Velocity_MysqlFix == "true" ]];then
+	if [ ! -x $dir"/module/mysql-connector.jar" ]; then
+		echo -e "${Info}正在获取依赖库"
+		wget -qO $dir"/module/mysql-connector.jar" "https://maven.aliyun.com/repository/public/mysql/mysql-connector-java/8.0.26/mysql-connector-java-8.0.26.jar"
+	fi
+	Server_Classpath=$dir"/module/mysql-connector.jar"
+	Server_MainClass="com.velocitypowered.proxy.Velocity"
+fi
 Server_P1=" -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
 -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC \
 -XX:-OmitStackTraceInFastThrow -XX:+AlwaysPreTouch -XX:G1MaxNewSizePercent=40 \
@@ -30,35 +62,13 @@ Server_P1=" -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
 Server_P2=" -XX:G1MixedGCCountTarget=8 -XX:InitiatingHeapOccupancyPercent=15 \
 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 \
 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true \
--server -Xms"$Server_memMin" -Xmx"$Server_memMax" \
--jar "$Server_Path"/"$Server_Name"/"$Server_Jar" nogui "
-if [[ $Server_Java == "8" ]];then
-	Server_Parameter="$Java8bin $Server_pre$Server_P1$Server_P2$Server_suf"
-elif [[ $Server_Java == "11" ]];then
-	Server_Parameter="$Java11bin $Server_pre$Server_P1$Server_P2$Server_suf"
-elif [[ $Server_Java == "16" ]];then
-	Server_Parameter="$Java16bin $Server_pre$Server_P1$Server_P2$Server_suf"
+-server -Xms"$Server_memMin" -Xmx"$Server_memMax" "
+if [[ -n $Server_Classpath ]]&&[[ -n $Server_MainClass ]];then
+	Server_P3="-cp '"$Server_Path"/"$Server_Name"/"$Server_Jar":"$Server_Classpath" "$Server_MainClass" nogui "
 else
-	Server_Parameter="java $Server_pre$Server_P1$Server_P2$Server_suf"
+	Server_P3="-jar "$Server_Path"/"$Server_Name"/"$Server_Jar" nogui "
 fi
-}
-
-check_sys(){
-	if [[ -f /etc/redhat-release ]]; then
-		release="centos"
-	elif cat /etc/issue | grep -q -E -i "debian"; then
-		release="debian"
-	elif cat /etc/issue | grep -q -E -i "ubuntu"; then
-		release="ubuntu"
-	elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
-		release="centos"
-	elif cat /proc/version | grep -q -E -i "debian"; then
-		release="debian"
-	elif cat /proc/version | grep -q -E -i "ubuntu"; then
-		release="ubuntu"
-	elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
-		release="centos"
-    fi
+Server_Parameter="$Java $Server_pre$Server_P1$Server_P2$Server_P3$Server_suf"
 }
 
 #screen用户目录
@@ -120,6 +130,13 @@ echo -e "--------------------------------------------
 
  Copyright 2021 Becod_ All rights reserved.
 --------------------------------------------"
+}
+
+check_ttyd(){
+	if [ ! -x $dir"/module/ttyd" ]; then
+		wget -O $dir"/module/ttyd" `curl -s https://api.github.com/repos/tsl0922/ttyd/releases | grep browser_download_url | grep 'x86_64' | head -n 1 | cut -d '"' -f 4`
+		chmod +x $dir"/module/ttyd"
+	fi
 }
 
 init(){ #初始化检测

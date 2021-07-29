@@ -20,7 +20,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 #           └─┐  ┐  ┌───────┬──┐  ┌──┘
 #             │ ─┤ ─┤       │ ─┤ ─┤
 #             └──┴──┘       └──┴──┘ 
-dir=`pwd` #脚本位置
+dir="/home/mc/control" #脚本位置
 Server_Name=$1
 action=$2
 
