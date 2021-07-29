@@ -64,7 +64,7 @@ Server_P2=" -XX:G1MixedGCCountTarget=8 -XX:InitiatingHeapOccupancyPercent=15 \
 -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=true -Daikars.new.flags=true \
 -server -Xms"$Server_memMin" -Xmx"$Server_memMax" "
 if [[ -n $Server_Classpath ]]&&[[ -n $Server_MainClass ]];then
-	Server_P3="-cp '"$Server_Path"/"$Server_Name"/"$Server_Jar":"$Server_Classpath" "$Server_MainClass" nogui "
+	Server_P3="-cp '"$Server_Path"/"$Server_Name"/"$Server_Jar":"$Server_Classpath"' "$Server_MainClass" nogui "
 else
 	Server_P3="-jar "$Server_Path"/"$Server_Name"/"$Server_Jar" nogui "
 fi
