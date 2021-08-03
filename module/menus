@@ -11,7 +11,7 @@ MainMenu(){
    ${Yellow_font}6.${Font_suffix}进入控制台
    ${Yellow_font}7.${Font_suffix}网页控制台
    ${Yellow_font}8.${Font_suffix}权限检查
-   #${Yellow_font}9.${Font_suffix}在线玩家
+   ${Yellow_font}9.${Font_suffix}Java安装
    ${Yellow_font}0.${Font_suffix}退出脚本${Font_suffix}"
 	read -p "请选择:" Menu_Choice
 	case "$Menu_Choice" in
@@ -25,7 +25,7 @@ MainMenu(){
 		6)action=console && clear && Server_List;;
 		7)action="" && clear && Web_control;;
 		8)action=permission && clear && Permission_Check;;
-		9)action=list && clear && Server_List;;
+		9)From_Menu=true && clear && Java_Select_Menu;;
 		r)$0;;
 		*)echo -e "${Error}请重新选择, 回车返回" && read && MainMenu;;
 	esac

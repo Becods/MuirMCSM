@@ -22,7 +22,7 @@ User="mc" #服务端运行用户 [必须]
 check_time_out="1200" #这里填写重启脚本超时时间，单位1/10秒 [必须]
 WebPort=8080 #网页控制台端口
 
-Server_Java=8 #服务器Java版本，可选8 11 16
+Server_Java=8 #服务器Java版本，可选hotspot8/11/16 openj98/11/16 zulu8/11/16 dragonwell8/11
 Server_Jar="Example*.jar" #服务端文件名,可用通配符 [必须] 
 Server_memMin="2048M" #最小占用内存 [必须] 
 Server_memMax="16384M" #最大占用内存 [必须] 

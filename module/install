@@ -1,85 +1,5 @@
 #!/bin/bash
 
-#为啥注释掉？因为不支持选择反馈！就是这么任性！
-#echo -e "${Info}: 请选择欲安装的Java(已有可直接下一步)"
-#PS3="请选择: "
-#Java_Select=("Java 8" "Java 11" "Java 16" "下一步")
-#select Java_Selects in "${Java_Select[@]}"; do
-#	case $Java_Selects in
-#		"Java 8");;
-#		"Java 11");;
-#		"Java 16");;
-#		"下一步");;
-#		*);;
-#	esac
-#done
-
-Java8_Selecte(){
-	if [[ "$Java8_Selectes" = "true" ]]; then
-		Java8_Selected="Java 8 x"
-		Java8_Selectes=false
-	else
-		Java8_Selected="Java 8 √"
-		Java8_Selectes=true
-	fi
-	Java_Select_Menu
-}
-Java11_Selecte(){
-	if [[ "$Java11_Selectes" = "true" ]]; then
-		Java11_Selected="Java 11 x"
-		Java11_Selectes=false
-	else
-		Java11_Selected="Java 11 √"
-		Java11_Selectes=true
-	fi
-	Java_Select_Menu
-}
-Java16_Selecte(){
-	if [[ "$Java16_Selectes" = "true" ]]; then
-		Java16_Selected="Java 16 x"
-		Java16_Selectes=false
-	else
-		Java16_Selected="Java 16 √"
-		Java16_Selectes=true
-	fi
-	Java_Select_Menu
-}
-
-Install_Java(){
-	echo -e "${Info}正在准备Java安装环境"
-	wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
-	add-apt-repository --yes http://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/deb
-	apt-get update
-	if [[ "$Java8_Selectes" = "true" ]] && [[ ! -f $Java8bin ]];then
-		echo -e "${Info}正在安装Java8"
-		apt install adoptopenjdk-8-hotspot -y
-	fi
-	if [[ "$Java11_Selectes" = "true" ]] && [[ ! -f $Java8bin ]];then
-		echo -e "${Info}正在安装Java11"
-		apt install adoptopenjdk-11-hotspot -y
-	fi
-	if [[ "$Java16_Selectes" = "true" ]] && [[ ! -f $Java8bin ]];then
-		echo -e "${Info}正在安装Java16"
-		apt install adoptopenjdk-16-hotspot -y
-	fi
-	echo -e "${Info}Java安装完成！您的Java安装位置为："
-	echo -e `update-alternatives --list java|sed 's/ /\n/g'`
-}
-
-Java_Select_Menu(){
-	clear
-	echo -e "${Info}: 请选择欲安装的Java(已有可直接下一步)"
-	echo -e "1) ${Java8_Selected}\n2) ${Java11_Selected}\n3) ${Java16_Selected}\n4) 下一步"
-	read -p "请选择:" Java_Select
-	case "$Java_Select" in
-		1)Java8_Selecte;;
-		2)Java11_Selecte;;
-		3)Java16_Selecte;;
-		4)Install_Java;;
-		*)echo -e "${Error}请重新选择, 回车返回" && read && Java_Select_Menu;;
-	esac
-}
-
 install_test(){
 	. $dir"/module/function"
 	if [[ -n `command -V curl|grep "not found"` ]];then
@@ -152,16 +72,14 @@ ${Info}检测到您是首次使用 MuirMCSM , 现在为您安装前置程序"
 		echo -e " 欲体验全功能请更换您的系统，官方推荐低占用的Debian!"
 		echo -e "${Info} 3秒后进入安装！"
 		sleep 3s
-		yum install screen curl wget -y
+		yum install screen curl wget coreutils -y
 		install_test
 	elif [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then
 		echo -e "${Info} 正在安装基本程序"
 		setDebian
 		apt-get update
-		apt-get install screen curl wget apt-transport-https ca-certificates dirmngr gnupg software-properties-common -y
-		Java8_Selected="Java 8 x"
-		Java11_Selected="Java 11 x"
-		Java16_Selected="Java 16 x"
+		apt-get install screen coreutils curl wget apt-transport-https ca-certificates dirmngr gnupg software-properties-common -y
+		From_Menu=true
 		Java_Select_Menu
 		install_test
 	else

@@ -14,7 +14,6 @@ Server_Check(){
 	if [ -z "`list&&echo "$alist"|grep -w $Server_Name`" ];then #查找服务器是否存在
 		Server_Not_Found
 	else
-		chown -R $User $Server_Path"/"$Server_Name
 		$Server_Name
 	fi
 }

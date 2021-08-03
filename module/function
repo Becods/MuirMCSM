@@ -11,6 +11,20 @@
 . $dir"/module/list"
 . $dir"/module/install"
 . $dir"/module/group"
+. $dir"/module/java"
+
+#screen用户目录
+run="/var/run/screen/S-"$User
+
+#字符颜色
+Green_font="\033[32m"
+Yellow_font="\033[33m"
+Red_font="\033[31m"
+Black_font="\033[30m"
+Font_suffix="\033[0m"
+Info="[${Green_font}Info${Font_suffix}] "
+Error="[${Red_font}Error${Font_suffix}] "
+Powered="${Black_font}Powered by Becod${Font_suffix}"
 
 if [[ -f /etc/redhat-release ]]; then
 	release="centos"
@@ -28,20 +42,10 @@ elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 	release="centos"
 fi
 
-Server_Java_select(){
-	Java8bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 8)
-	Java11bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 11)
-	Java16bin=$(echo -e `update-alternatives --list java`|sed 's/ /\n/g'|grep 16)
-	if [[ $Server_Java == "8" ]] && [[ -n $Java8bin ]];then
-		Java=$Java8bin
-	elif [[ $Server_Java == "11" ]] && [[ -n $Java11bin ]];then
-		Java=$Java11bin
-	elif [[ $Server_Java == "16" ]] && [[ -n $Java16bin ]];then
-		Java=$Java16bin
-	else
-		Java=`which java`
-	fi
-}
+if [ -z $Server_memMin_Default ];then Server_memMin_Default="512m";fi
+if [ -z $Server_memMax_Default ];then Server_memMax_Default="512m";fi
+if [ -z $check_time_out ];then check_time_out="1200";fi
+if [ -z $WebPort ];then WebPort=8080;fi
 
 Server_StartCommand(){ #服务器启动命令
 if [[ $release == "debian" ]]||[[ $release == "ubuntu" ]];then #debian特权！
@@ -71,18 +75,29 @@ fi
 Server_Parameter="$Java $Server_pre$Server_P1$Server_P2$Server_P3$Server_suf"
 }
 
-#screen用户目录
-run="/var/run/screen/S-"$User
-
-#字符颜色
-Green_font="\033[32m"
-Yellow_font="\033[33m"
-Red_font="\033[31m"
-Black_font="\033[30m"
-Font_suffix="\033[0m"
-Info="[${Green_font}Info${Font_suffix}] "
-Error="[${Red_font}Error${Font_suffix}] "
-Powered="${Black_font}Powered by Becod${Font_suffix}"
+Server_Function_Check(){
+	if [ -z $Server_Jar ]; then
+		echo -e $Error$Server_Name"的Server_Jar参数为空或无法解析，启动失败！";exit
+	fi
+	if [ -z $Server_memMin ]; then
+		echo -e $Error$Server_Name"的Server_memMin参数为空或无法解析，正在使用默认值"$Server_memMin_Default"启动！";exit
+	fi
+	if [ -z $Server_memMax ]; then
+		echo -e $Error$Server_Name"的Server_memMax参数为空或无法解析，正在使用默认值"$Server_memMax_Default"启动！";exit
+	fi
+	if [ -z $Server_Path ]; then
+		echo -e $Error"Server_Path参数为空或无法解析，启动失败！";exit
+	fi
+	if [ -z $User ]; then
+		echo -e $Error"User参数为空或无法解析，启动失败！";exit
+	fi
+	if [ ! -d $Server_Path"/"$Server_Name ]; then
+		echo -e $Error$Server_Name"的服务端路径错误或不存在，启动失败！";exit
+	fi
+	if [ -f $Server_Path"/"$Server_Name ]; then
+		echo -e $Error$Server_Name"的服务端启动文件错误或不存在，启动失败！";exit
+	fi
+}
 
 list(){
 alist=`sed 's/#/\n#/g' $dir"/.config"|sed '/#/d'|grep '(){'|sed 's/(){//g'`
@@ -94,6 +109,8 @@ list=`echo "$alist"|grep -v '\.'`
 
 Server_Action(){
 Server_StartCommand
+Server_Function_Check
+chown -R $User $Server_Path"/"$Server_Name
 case "$action" in
 	start)Server_Start;;
 	stop)Server_Stop;;
@@ -151,4 +168,4 @@ if [ -f $dir"/module/FirstRun" ]; then
 fi
 }
 
-trap "" HUP INT TSTP
+#trap "" HUP INT TSTP

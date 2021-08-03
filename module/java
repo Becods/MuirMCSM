@@ -1,0 +1,368 @@
+#!/bin/bash
+
+#为啥注释掉？因为不支持选择反馈！就是这么任性！
+#echo -e "${Info}: 请选择欲安装的Java(已有可直接下一步)"
+#PS3="请选择: "
+#Java_Select=("Java 8" "Java 11" "Java 16" "下一步")
+#select Java_Selects in "${Java_Select[@]}"; do
+#	case $Java_Selects in
+#		"Java 8");;
+#		"Java 11");;
+#		"Java 16");;
+#		"下一步");;
+#		*);;
+#	esac
+#done
+
+Server_Java_select(){
+	Java_Versions=$(echo -e `update-alternatives --list java`)
+	AdoptOpenJDK_8bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-8-hotspot)
+	AdoptOpenJDK_11bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-11-hotspot)
+	AdoptOpenJDK_16bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-16-hotspot)
+	OpenJ9_8bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-8-openj9)
+	OpenJ9_11bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-11-openj9)
+	OpenJ9_16bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep adoptopenjdk-16-openj9)
+	Zulu_8bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep zulu-8)
+	Zulu_11bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep zulu-11)
+	Zulu_16bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep zulu-16)
+	Dragonwell_8bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep dragonwell-8)
+	Dragonwell_11bin=$(echo "$Java_Versions"|sed 's/ /\n/g'|grep dragonwell-11)
+	if [[ $Server_Java == "hotspot8" ]] && [[ -n $AdoptOpenJDK_8bin ]];then
+		Java=$AdoptOpenJDK_8bin
+	elif [[ $Server_Java == "hotspot11" ]] && [[ -n $AdoptOpenJDK_11bin ]];then
+		Java=$AdoptOpenJDK_11bin
+	elif [[ $Server_Java == "hotspot16" ]] && [[ -n $AdoptOpenJDK_16bin ]];then
+		Java=$AdoptOpenJDK_16bin
+	elif [[ $Server_Java == "openj98" ]] && [[ -n $OpenJ9_8bin ]];then
+		Java=$OpenJ9_8bin
+	elif [[ $Server_Java == "openj911" ]] && [[ -n $OpenJ9_11bin ]];then
+		Java=$OpenJ9_11bin
+	elif [[ $Server_Java == "openj916" ]] && [[ -n $OpenJ9_16bin ]];then
+		Java=$OpenJ9_16bin
+	elif [[ $Server_Java == "zulu8" ]] && [[ -n $Zulu_8bin ]];then
+		Java=$Zulu_8bin
+	elif [[ $Server_Java == "zulu11" ]] && [[ -n $Zulu_11bin ]];then
+		Java=$Zulu_11bin
+	elif [[ $Server_Java == "zulu16" ]] && [[ -n $Zulu_16bin ]];then
+		Java=$Zulu_16bin
+	elif [[ $Server_Java == "dragonwell8" ]] && [[ -n $Dragonwell_8bin ]];then
+		Java=$Dragonwell_8bin
+	elif [[ $Server_Java == "dragonwell11" ]] && [[ -n $Dragonwell_11bin ]];then
+		Java=$Dragonwell_11bin
+	else
+		Java=`which java`
+	fi
+}
+
+AdoptOpenJDK_8_Selecte(){
+	if [[ "$AdoptOpenJDK_8_Selectes" = "true" ]]; then
+		AdoptOpenJDK_8_Selected="AdoptOpenJDK 8 x"
+		AdoptOpenJDK_8_Selectes=false
+	else
+		AdoptOpenJDK_8_Selected="AdoptOpenJDK 8 √"
+		AdoptOpenJDK_8_Selectes=true
+	fi
+	Java_Select_Menu
+}
+AdoptOpenJDK_11_Selecte(){
+	if [[ "$AdoptOpenJDK_11_Selectes" = "true" ]]; then
+		AdoptOpenJDK_11_Selected="AdoptOpenJDK 11 x"
+		AdoptOpenJDK_11_Selectes=false
+	else
+		AdoptOpenJDK_11_Selected="AdoptOpenJDK 11 √"
+		AdoptOpenJDK_11_Selectes=true
+	fi
+	Java_Select_Menu
+}
+AdoptOpenJDK_16_Selecte(){
+	if [[ "$AdoptOpenJDK_16_Selectes" = "true" ]]; then
+		AdoptOpenJDK_16_Selected="AdoptOpenJDK 16 x"
+		AdoptOpenJDK_16_Selectes=false
+	else
+		AdoptOpenJDK_16_Selected="AdoptOpenJDK 16 √"
+		AdoptOpenJDK_16_Selectes=true
+	fi
+	Java_Select_Menu
+}
+
+
+OpenJ9_8_Selecte(){
+	if [[ "$OpenJ9_8_Selectes" = "true" ]]; then
+		OpenJ9_8_Selected="OpenJ9 8 x"
+		OpenJ9_8_Selectes=false
+	else
+		OpenJ9_8_Selected="OpenJ9 8 √"
+		OpenJ9_8_Selectes=true
+	fi
+	Java_Select_Menu
+}
+OpenJ9_11_Selecte(){
+	if [[ "$OpenJ9_11_Selectes" = "true" ]]; then
+		OpenJ9_11_Selected="OpenJ9 11 x"
+		OpenJ9_11_Selectes=false
+	else
+		OpenJ9_11_Selected="OpenJ9 11 √"
+		OpenJ9_11_Selectes=true
+	fi
+	Java_Select_Menu
+}
+OpenJ9_16_Selecte(){
+	if [[ "$OpenJ9_16_Selectes" = "true" ]]; then
+		OpenJ9_16_Selected="OpenJ9 16 x"
+		OpenJ9_16_Selectes=false
+	else
+		OpenJ9_16_Selected="OpenJ9 16 √"
+		OpenJ9_16_Selectes=true
+	fi
+	Java_Select_Menu
+}
+
+
+Zulu_8_Selecte(){
+	if [[ "$Zulu_8_Selectes" = "true" ]]; then
+		Zulu_8_Selected="Zulu 8 x"
+		Zulu_8_Selectes=false
+	else
+		Zulu_8_Selected="Zulu 8 √"
+		Zulu_8_Selectes=true
+	fi
+	Java_Select_Menu
+}
+Zulu_11_Selecte(){
+	if [[ "$Zulu_11_Selectes" = "true" ]]; then
+		Zulu_11_Selected="Zulu 11 x"
+		Zulu_11_Selectes=false
+	else
+		Zulu_11_Selected="Zulu 11 √"
+		Zulu_11_Selectes=true
+	fi
+	Java_Select_Menu
+}
+Zulu_16_Selecte(){
+	if [[ "$Zulu_16_Selectes" = "true" ]]; then
+		Zulu_16_Selected="Zulu 16 x (推荐)"
+		Zulu_16_Selectes=false
+	else
+		Zulu_16_Selected="Zulu 16 √"
+		Zulu_16_Selectes=true
+	fi
+	Java_Select_Menu
+}
+
+
+Dragonwell_8_Selecte(){
+	if [[ "$Dragonwell_8_Selectes" = "true" ]]; then
+		Dragonwell_8_Selected="Dragonwell 8 x (推荐)"
+		Dragonwell_8_Selectes=false
+	else
+		Dragonwell_8_Selected="Dragonwell 8 √"
+		Dragonwell_8_Selectes=true
+	fi
+	Java_Select_Menu
+}
+Dragonwell_11_Selecte(){
+	if [[ "$Dragonwell_11_Selectes" = "true" ]]; then
+		Dragonwell_11_Selected="Dragonwell 11 x (推荐)"
+		Dragonwell_11_Selectes=false
+	else
+		Dragonwell_11_Selected="Dragonwell 11 √"
+		Dragonwell_11_Selectes=true
+	fi
+	Java_Select_Menu
+}
+
+Register_Alternatives(){
+	tools="jaotc jar jarsigner java javac javadoc javap jcmd jconsole jdb jdeprscan jdeps jfr jhsdb jimage jinfo jjs jlink jmap jmod jps jrunscript jshell jstack jstat jstatd keytool pack200 rmic rmid rmiregistry serialver unpack200 jexec jspawnhelper"
+	for tool in $tools ; do
+		for tool_path in "$jdk_base_dir/bin/$tool" "$jdk_base_dir/lib/$tool" ; do
+			if [ ! -e "$tool_path" ]; then
+				continue
+			fi
+			slave=""
+			tool_man_path="$jdk_base_dir/man/man1/$tool.1"
+			if [ -e "$tool_man_path" ]; then
+				slave="--slave /usr/share/man/man1/$tool.1 $tool.1 $tool_man_path"
+			fi
+			update-alternatives \
+				--install \
+				"/usr/bin/$tool" \
+				"$tool" \
+				"$tool_path" \
+				"$priority" \
+				$slave
+		done
+	done
+}
+
+Register_jinfo(){
+cat > "/usr/lib/jvm/."$1".jinfo" <<EOF
+name=$1
+alias=$1
+priority=$2
+section=contrib
+
+jdkhl jaotc /usr/lib/jvm/$1/bin/jaotc
+jdkhl jar /usr/lib/jvm/$1/bin/jar
+jdkhl jarsigner /usr/lib/jvm/$1/bin/jarsigner
+hl java /usr/lib/jvm/$1/bin/java
+jdkhl javac /usr/lib/jvm/$1/bin/javac
+jdkhl javadoc /usr/lib/jvm/$1/bin/javadoc
+jdkhl javap /usr/lib/jvm/$1/bin/javap
+jdkhl jcmd /usr/lib/jvm/$1/bin/jcmd
+jdk jconsole /usr/lib/jvm/$1/bin/jconsole
+jdkhl jdb /usr/lib/jvm/$1/bin/jdb
+jdkhl jdeprscan /usr/lib/jvm/$1/bin/jdeprscan
+jdkhl jdeps /usr/lib/jvm/$1/bin/jdeps
+hl jfr /usr/lib/jvm/$1/bin/jfr
+jdkhl jhsdb /usr/lib/jvm/$1/bin/jhsdb
+jdkhl jimage /usr/lib/jvm/$1/bin/jimage
+jdkhl jinfo /usr/lib/jvm/$1/bin/jinfo
+hl jjs /usr/lib/jvm/$1/bin/jjs
+jdkhl jlink /usr/lib/jvm/$1/bin/jlink
+jdkhl jmap /usr/lib/jvm/$1/bin/jmap
+jdkhl jmod /usr/lib/jvm/$1/bin/jmod
+jdkhl jps /usr/lib/jvm/$1/bin/jps
+hl jrunscript /usr/lib/jvm/$1/bin/jrunscript
+jdkhl jshell /usr/lib/jvm/$1/bin/jshell
+jdkhl jstack /usr/lib/jvm/$1/bin/jstack
+jdkhl jstat /usr/lib/jvm/$1/bin/jstat
+jdkhl jstatd /usr/lib/jvm/$1/bin/jstatd
+hl keytool /usr/lib/jvm/$1/bin/keytool
+hl pack200 /usr/lib/jvm/$1/bin/pack200
+jdkhl rmic /usr/lib/jvm/$1/bin/rmic
+hl rmid /usr/lib/jvm/$1/bin/rmid
+hl rmiregistry /usr/lib/jvm/$1/bin/rmiregistry
+jdkhl serialver /usr/lib/jvm/$1/bin/serialver
+hl unpack200 /usr/lib/jvm/$1/bin/unpack200
+hl jexec /usr/lib/jvm/$1/lib/jexec
+hl jspawnhelper /usr/lib/jvm/$1/lib/jspawnhelper
+EOF
+}
+
+
+Install_Java(){
+	mkdir /tmp/jvm
+	if [[ "$AdoptOpenJDK_8_Selectes" = "true" ]] || [[ "$AdoptOpenJDK_11_Selectes" = "true" ]] || [[ "$AdoptOpenJDK_16_Selectes" = "true" ]] || [[ "$OpenJ9_8_Selectes" = "true" ]] || [[ "$OpenJ9_11_Selectes" = "true" ]] || [[ "$OpenJ9_16_Selectes" = "true" ]];then
+		echo -e "${Info}正在准备AdoptOpenJDK安装环境"
+		wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
+		add-apt-repository --yes http://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/deb
+		apt-get update
+	fi
+	if [[ "$AdoptOpenJDK_8_Selectes" = "true" ]] && [[ ! -f $AdoptOpenJDK_8bin ]];then
+		echo -e "${Info}正在安装AdoptOpenJDK 8"
+		apt install adoptopenjdk-8-hotspot -y
+	fi
+	if [[ "$AdoptOpenJDK_11_Selectes" = "true" ]] && [[ ! -f $AdoptOpenJDK_11bin ]];then
+		echo -e "${Info}正在安装AdoptOpenJDK 11"
+		apt install adoptopenjdk-11-hotspot -y
+	fi
+	if [[ "$AdoptOpenJDK_16_Selectes" = "true" ]] && [[ ! -f $AdoptOpenJDK_16bin ]];then
+		echo -e "${Info}正在安装AdoptOpenJDK 16"
+		apt install adoptopenjdk-16-hotspot -y
+	fi
+	if [[ "$OpenJ9_8_Selectes" = "true" ]] && [[ ! -f $OpenJ9_8bin ]];then
+		echo -e "${Info}正在安装OpenJ9 8"
+		apt install adoptopenjdk-8-openj9 -y
+	fi
+	if [[ "$OpenJ9_11_Selectes" = "true" ]] && [[ ! -f $OpenJ9_11bin ]];then
+		echo -e "${Info}正在安装OpenJ9 11"
+		apt install adoptopenjdk-11-openj9 -y
+	fi
+	if [[ "$OpenJ9_16_Selectes" = "true" ]] && [[ ! -f $OpenJ9_16bin ]];then
+		echo -e "${Info}正在安装OpenJ9 16"
+		apt install adoptopenjdk-16-openj9 -y
+	fi
+
+
+	if [[ "$Zulu_8_Selectes" = "true" ]] && [[ ! -f $Zulu_8bin ]];then
+		echo -e "${Info}正在安装Zulu 8"
+		wget -O "/tmp/jvm/zulu8.deb" "https://cdn.azul.com/zulu/bin/zulu8.56.0.21-ca-jdk8.0.302-linux_amd64.deb"
+		dpkg -i "/tmp/jvm/zulu8.deb"
+		update-alternatives --remove java "/usr/lib/jvm/zulu-8-amd64/jre/bin/java"
+	fi
+	if [[ "$Zulu_11_Selectes" = "true" ]] && [[ ! -f $Zulu_11bin ]];then
+		echo -e "${Info}正在安装Zulu 11"
+		wget -O "/tmp/jvm/zulu11.deb" "https://cdn.azul.com/zulu/bin/zulu11.50.19-ca-jdk11.0.12-linux_amd64.deb"
+		dpkg -i "/tmp/jvm/zulu11.deb"
+	fi
+	if [[ "$Zulu_16_Selectes" = "true" ]] && [[ ! -f $Zulu_16bin ]];then
+		echo -e "${Info}正在安装Zulu 16"
+		wget -O "/tmp/jvm/zulu16.deb" "https://cdn.azul.com/zulu/bin/zulu16.32.15-ca-jdk16.0.2-linux_amd64.deb"
+		dpkg -i "/tmp/jvm/zulu16.deb"
+	fi
+
+
+	if [[ "$Dragonwell_8_Selectes" = "true" ]] && [[ ! -f $Dragonwell_8bin ]];then
+		echo -e "${Info}正在安装Dragonwell 8"
+		wget -O "/tmp/jvm/Dragonwell_8.tar.gz" "https://dragonwell.oss-cn-shanghai.aliyuncs.com/8.7.7/Alibaba_Dragonwell_8.7.7_x64_linux.tar.gz"
+		tar -zxf "/tmp/jvm/Dragonwell_8.tar.gz" -C "/usr/lib/jvm/"
+		mv "/usr/lib/jvm/jdk8u292-b01" "/usr/lib/jvm/dragonwell-8-amd64"
+		priority=1083
+		jdk_base_dir="/usr/lib/jvm/dragonwell-8-amd64"
+		Register_jinfo dragonwell-8-amd64 1083
+		Register_Alternatives
+	fi
+	if [[ "$Dragonwell_11_Selectes" = "true" ]] && [[ ! -f $Dragonwell_11bin ]];then
+		echo -e "${Info}正在安装Dragonwell 8"
+		wget -O "/tmp/jvm/Dragonwell_11.tar.gz" "https://dragonwell.oss-cn-shanghai.aliyuncs.com/11.0.11.7/Alibaba_Dragonwell_11.0.11.7_aarch64_linux.tar.gz"
+		tar -zxf "/tmp/jvm/Dragonwell_11.tar.gz" -C "/usr/lib/jvm/"
+		mv "/usr/lib/jvm/jdk-11.0.11+0" "/usr/lib/jvm/dragonwell-11-amd64"
+		priority=1113
+		jdk_base_dir="/usr/lib/jvm/dragonwell-11-amd64"
+		Register_jinfo dragonwell-11-amd64 1113
+		Register_Alternatives
+	fi
+	rm -rf "/tmp/jvm/"
+	echo -e "${Info}Java安装完成！您的Java安装位置为："
+	echo -e "`update-alternatives --list java|sed 's/ /\n/g'`"
+}
+
+Java_Select_Menu(){
+	if [[ $release != 'debian' ]]&&[[ $release != 'ubuntu' ]];then
+		echo -e "${Error}抱歉，您的系统暂时不支持此功能！" && exit 0
+	fi
+	if [[ $From_Menu == "true" ]]; then
+		AdoptOpenJDK_8_Selected="AdoptOpenJDK 8 x"
+		AdoptOpenJDK_11_Selected="AdoptOpenJDK 11 x"
+		AdoptOpenJDK_16_Selected="AdoptOpenJDK 16 x"
+		OpenJ9_8_Selected="OpenJ9 8 x"
+		OpenJ9_11_Selected="OpenJ9 11 x"
+		OpenJ9_16_Selected="OpenJ9 16 x"
+		Zulu_8_Selected="Zulu 8 x"
+		Zulu_11_Selected="Zulu 11 x"
+		Zulu_16_Selected="Zulu 16 x (推荐)"
+		Dragonwell_8_Selected="Dragonwell 8 x (推荐)"
+		Dragonwell_11_Selected="Dragonwell 11 x (推荐)"
+		From_Menu=false
+	fi
+	clear
+	echo -e "${Info}: 请选择欲安装的Java(已有可直接下一步)
+1) ${AdoptOpenJDK_8_Selected}
+2) ${AdoptOpenJDK_11_Selected}
+3) ${AdoptOpenJDK_16_Selected}
+4) ${OpenJ9_8_Selected}
+5) ${OpenJ9_11_Selected}
+6) ${OpenJ9_16_Selected}
+7) ${Zulu_8_Selected}
+8) ${Zulu_11_Selected}
+9) ${Zulu_16_Selected}
+10) ${Dragonwell_8_Selected}
+11) ${Dragonwell_11_Selected}
+0) 下一步"
+	read -p "请选择:" Java_Select
+	case "$Java_Select" in
+		1)AdoptOpenJDK_8_Selecte;;
+		2)AdoptOpenJDK_11_Selecte;;
+		3)AdoptOpenJDK_16_Selecte;;
+		4)OpenJ9_8_Selecte;;
+		5)OpenJ9_11_Selecte;;
+		6)OpenJ9_16_Selecte;;
+		7)Zulu_8_Selecte;;
+		8)Zulu_11_Selecte;;
+		9)Zulu_16_Selecte;;
+		10)Dragonwell_8_Selecte;;
+		11)Dragonwell_11_Selecte;;
+		0)Install_Java;;
+		*)echo -e "${Error}请重新选择, 回车返回" && read && Java_Select_Menu;;
+	esac
+}
